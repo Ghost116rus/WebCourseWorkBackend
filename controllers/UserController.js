@@ -3,6 +3,7 @@ import bcrypt from 'bcrypt';
 
 
 import UserModel from '../models/User.js';
+import OrderModel from '../models/Order.js';
 
 const sercterKey = "sercer123";
 
@@ -15,13 +16,15 @@ export const register = async (req, res) => {
         const doc = new UserModel({
             email: req.body.email,
             fullName: req.body.fullName,
-            avatarUrl: req.body.avatarUrl,
+            mobilePhone: req.body.mobilePhone,
+            role: req.body.role,
             passwordHash: hash,
         });    
         const user = await doc.save();
     
         const token = jwt.sign({
             _id: user._id,
+            _role: user.role,
         }, sercterKey,
         {
             expiresIn: '30d',
@@ -62,13 +65,14 @@ export const login = async (req, res) => {
 
         const token = jwt.sign({
             _id: user._id,
+            _role: user.role,
         }, sercterKey,
         {
             expiresIn: '30d',
         }
         );
 
-        const { passwordHash, ...userData } = user._doc;
+        const { passwordHash, role, ...userData } = user._doc;
 
         res.json({
             ...userData,
@@ -95,6 +99,8 @@ export const getMe = async (req, res) => {
         }
 
         const { passwordHash, ...userData } = user._doc;
+
+        //const history = await OrderModel.find(where: user._doc._id == user)
 
         res.json(userData);
     } catch (error) {

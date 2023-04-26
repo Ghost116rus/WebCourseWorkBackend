@@ -9,6 +9,8 @@ export default (req, res, next) => {
             const decoded = jwt.verify(token, "sercer123");
 
             req.userId = decoded._id;
+            req.role = decoded._role;
+
             next();
         } catch(e) {
             return res.status(403).json({

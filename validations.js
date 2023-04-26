@@ -13,9 +13,10 @@ export const registerValidation = [
     body('avatarUrl', 'Неверная ссылка на автарку').optional().isURL(),
 ];
 
-export const postCreateValidation = [
-    body("title", 'Введите заголовок статьи').isLength({ min: 3 }).isString(),
-    body('text', 'Введите текст статьи').isLength({min: 5}).isString(),
-    body('tags', 'Неверный формат тэгов (укажите массив)').optional().isString(),
+export const bookCreateValidation = [
+    body("title", 'Введите заголовок книги').isLength({ min: 3 }).isString(),
+    body('description', 'Введите аннотацию книги').isLength({min: 5}).isString(),
+    body('authors', 'Неверный формат авторов (укажите массив)').optional().isArray(),
+    body('genres', 'Неверный формат жанров (укажите массив)').optional().isArray(),
     body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),
 ];

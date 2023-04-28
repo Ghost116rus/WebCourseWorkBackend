@@ -29,10 +29,33 @@ function GetLightDataAboutBooks (booksData) {
 }
 
 export const getAll = async (req, res) => {
-    try {
-        const books = await BookModel.find().exec();
+    let {genre, limit, page} = req.query;
+    page = page || 1
+    limit = limit || 9
+    let offset = page * limit - limit
+    let books;
+    let count;
 
-        res.json(GetLightDataAboutBooks(books));
+    try {
+        if (genre)
+        {
+            books = await BookModel.find({"genres" : { $in : [genre]  } })
+                .limit(limit).skip(offset).exec();
+            count = await BookModel.count({"genres" : { $in : [genre]  } }).exec();
+        } else {
+            books = await BookModel.find()
+                .limit(limit).skip(offset).exec();
+            count = await BookModel.count().exec();
+        }
+
+        if(count === 0)
+        {
+            return res.status(404).json({
+                msg: "Не удалось найти книги"
+            })
+        }
+
+        res.json({books: GetLightDataAboutBooks(books), count: count});
 
     } catch (err) {
         console.log(err);

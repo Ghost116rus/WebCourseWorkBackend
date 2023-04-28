@@ -7,7 +7,7 @@ export default (req, res, next) => {
     } else {
         console.log(req.role);
         return res.status(403).json({
-            message: 'Нет доступа',
+            msg: 'Нет доступа',
         });
     }
 

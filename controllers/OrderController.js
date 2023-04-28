@@ -12,7 +12,7 @@ export const getActiveOrders = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить активные заявки",
+            msg: "Не удалось получить активные заявки",
         })
     }
 };
@@ -26,12 +26,12 @@ export const create = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: "Пользователь не был найден"
+                msg: "Пользователь не был найден"
             })
         }
         if (user._doc.loyaltyPoints < 10) {
             return res.status(402).json({
-                message: "У вас недостаточно очков лояльности"
+                msg: "У вас недостаточно очков лояльности"
             })
         }
 
@@ -39,12 +39,12 @@ export const create = async (req, res) => {
 
         if (!book) {
             return res.status(404).json({
-                message: "Книга не была найдена"
+                msg: "Книга не была найдена"
             })
         }
         if (book._doc.count < 1) {
             return res.status(402).json({
-                message: "Нет свободоного экземпляра книги"
+                msg: "Нет свободоного экземпляра книги"
             })
         }
 
@@ -64,7 +64,7 @@ export const create = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось оформить заявку",
+            msg: "Не удалось оформить заявку",
         })
     }
 }

@@ -6,7 +6,7 @@ export default (req, res, next) => {
         next();
     } else {
         return res.status(403).json({
-            message: 'Нет доступа',
+            msg: 'Нет доступа',
         });
     }
 

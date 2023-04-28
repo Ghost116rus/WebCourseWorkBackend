@@ -40,7 +40,7 @@ export const register = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'Не удалось зарегистрироваться',
+            msg: 'Не удалось зарегистрироваться',
         })
     }
 };
@@ -51,7 +51,7 @@ export const login = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: 'Неверный логин или пароль'
+                msg: 'Неверный логин или пароль'
             });
         }
 
@@ -59,7 +59,7 @@ export const login = async (req, res) => {
 
         if(!isValidPass) {
             return res.status(403).json({
-                message: 'Неверный логин или пароль'
+                msg: 'Неверный логин или пароль'
             });
         }
 
@@ -72,17 +72,17 @@ export const login = async (req, res) => {
         }
         );
 
-        const { passwordHash, role, ...userData } = user._doc;
+        const userRole = user._doc.role;
 
         res.json({
-            ...userData,
+            userRole,
             token
         })
 
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'Не удалось авторизоваться',
+            msg: 'Не удалось авторизоваться',
         })
     }
 };
@@ -94,7 +94,7 @@ export const getMe = async (req, res) => {
 
         if (!user) {
             return res.status(404).json({
-                message: "Пользователь не был найден"
+                msg: "Пользователь не был найден"
             })
         }
         const result = {};
@@ -106,7 +106,7 @@ export const getMe = async (req, res) => {
     } catch (error) {
         console.log(error);
         res.status(500).json({
-            message: 'Нет доступа',
+            msg: 'Нет доступа',
         })
     }
 };

@@ -1,15 +1,43 @@
 import BookModel from '../models/Book.js';
+import GenreModel from '../models/Genre.js';
+
+function LineString(array) {
+    var inLineString = "";
+
+    array.map(author =>{
+        inLineString = inLineString + author + ", ";
+    })
+
+    return inLineString.slice(0, -2);
+}
+
+function GetLightDataAboutBooks (booksData) {
+    const books = [];
+
+    booksData.map(book => {
+        books.push({
+            _id: book._id,
+            title: book.title,
+            year: book.year,
+            description: book.description,
+            imageUrl: book.imageUrl,
+            authors: LineString(book.authors),
+        })
+    })
+
+    return books;
+}
 
 export const getAll = async (req, res) => {
     try {
         const books = await BookModel.find().exec();
 
-        res.json(books)
+        res.json(GetLightDataAboutBooks(books));
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить ккниги",
+            msg: "Не удалось получить книги",
         })
     }
 };
@@ -22,16 +50,16 @@ export const getBooksByName = async (req, res) => {
         if(books.length === 0)
         {
             return res.status(404).json({
-                message: "Не удалось найти книги"
+                msg: "Не удалось найти книги"
             })
         }
 
-        res.json(books)
+        res.json(GetLightDataAboutBooks(books));
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить ккниги",
+            msg: "Не удалось получить книги",
         })
     }
 };
@@ -44,16 +72,16 @@ export const getBooksByAuthor = async (req, res) => {
         if(books.length === 0)
         {
             return res.status(404).json({
-                message: "Не удалось найти книги"
+                msg: "Не удалось найти книги"
             })
         }
 
-        res.json(books)
+        res.json(GetLightDataAboutBooks(books));
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить ккниги",
+            msg: "Не удалось получить книги",
         })
     }
 };
@@ -66,16 +94,16 @@ export const getBooksByGenre = async (req, res) => {
         if(books.length === 0)
         {
             return res.status(404).json({
-                message: "Не удалось найти книги"
+                msg: "Не удалось найти книги"
             })
         }
 
-        res.json(books)
+        res.json(GetLightDataAboutBooks(books));
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить ккниги",
+            msg: "Не удалось получить ккниги",
         })
     }
 };
@@ -89,9 +117,12 @@ export const getBookById = async (req, res) => {
         if (!book)
         {
             return res.status(404).json({
-                message: 'Книга не найдена',
+                msg: 'Книга не найдена',
             });
         }
+
+        book.authors = LineString(book.authors);
+        book.genres = LineString(book.genres);
 
         console.log("Success");
         return res.json(book);
@@ -99,7 +130,7 @@ export const getBookById = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить книгу",
+            msg: "Не удалось получить книгу",
         })
     }
 };
@@ -118,14 +149,14 @@ export const remove = (req, res) => {
                     });
                 }
                 res.json({
-                    succes: true,
+                    success: true,
                 });
             })
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось удалить книгу",
+            msg: "Не удалось удалить книгу",
         })
     }
 };
@@ -150,13 +181,13 @@ export const create = async (req, res) => {
         const book = await doc.save();
 
         res.json({
-            succes: true,
+            success: true,
         });
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось создать книгу",
+            msg: "Не удалось создать книгу",
         })
     }
 }
@@ -169,7 +200,7 @@ export const update = async (req, res) => {
 
         if (!doc) {
             return res.status(404).json({
-                message: 'Книга не найдена',
+                msg: 'Книга не найдена',
             });
         }
 
@@ -199,7 +230,44 @@ export const update = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось обновить книгу",
+            msg: "Не удалось обновить книгу",
         })
     }
 }
+
+
+export const createGenre = async (req, res) => {
+    try {
+        console.log(req.params.name);
+
+        const doc = new GenreModel({
+            name: req.params.name
+        });
+
+        await doc.save();
+
+        res.json({
+            success: true,
+        });
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            msg: "Не удалось создать жанр",
+        })
+    }
+};
+
+export const getAllGenres = async (req, res) => {
+    try {
+        const genres = await GenreModel.find().exec();
+
+        res.json(genres)
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            msg: "Не удалось получить жанры",
+        })
+    }
+};

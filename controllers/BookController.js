@@ -9,12 +9,78 @@ export const getAll = async (req, res) => {
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось получить статьи",
+            message: "Не удалось получить ккниги",
         })
     }
 };
 
-export const getOne = async (req, res) => {
+export const getBooksByName = async (req, res) => {
+    try {
+
+        const books = await BookModel.find({title: new RegExp(req.body.bookName )}).exec();
+
+        if(books.length === 0)
+        {
+            return res.status(404).json({
+                message: "Не удалось найти книги"
+            })
+        }
+
+        res.json(books)
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось получить ккниги",
+        })
+    }
+};
+
+export const getBooksByAuthor = async (req, res) => {
+    try {
+
+        const books = await BookModel.find({"authors" : { $in : [req.body.author]  } }).exec();
+
+        if(books.length === 0)
+        {
+            return res.status(404).json({
+                message: "Не удалось найти книги"
+            })
+        }
+
+        res.json(books)
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось получить ккниги",
+        })
+    }
+};
+
+export const getBooksByGenre = async (req, res) => {
+    try {
+
+        const books = await BookModel.find({"genres" : { $in : [req.body.genre]  } }).exec();
+
+        if(books.length === 0)
+        {
+            return res.status(404).json({
+                message: "Не удалось найти книги"
+            })
+        }
+
+        res.json(books)
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось получить ккниги",
+        })
+    }
+};
+
+export const getBookById = async (req, res) => {
     try {
         const bookId = req.params.id;
 
@@ -83,7 +149,9 @@ export const create = async (req, res) => {
 
         const book = await doc.save();
 
-        res.json(book);
+        res.json({
+            succes: true,
+        });
 
     } catch (err) {
         console.log(err);

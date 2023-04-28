@@ -97,12 +97,12 @@ export const getMe = async (req, res) => {
                 message: "Пользователь не был найден"
             })
         }
+        const result = {};
+        const { passwordHash, role, ...userData } = user._doc;
+        result['userData'] = userData;
+        result['history'] = await OrderModel.find({reader: {_id: userData._id}}).populate("book");
 
-        const { passwordHash, ...userData } = user._doc;
-
-        //const history = await OrderModel.find(where: user._doc._id == user)
-
-        res.json(userData);
+        res.json(result);
     } catch (error) {
         console.log(error);
         res.status(500).json({

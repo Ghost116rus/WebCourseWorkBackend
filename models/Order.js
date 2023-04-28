@@ -5,6 +5,14 @@ const OrderSchema = new mongoose.Schema({
         type: Date,
         required: false,
     },
+    isGiven: {
+        type: Boolean,
+        default: false
+    },
+    isReturned: {
+        type: Boolean,
+        default: false
+    },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

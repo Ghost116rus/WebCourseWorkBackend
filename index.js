@@ -5,8 +5,8 @@ import mongoose from 'mongoose';
 
 import {registerValidation, loginValidation, bookCreateValidation} from './validations.js';
 
-import {checkAdminRole, checkAuth, handleValidationErrors} from './utils/index.js';
-import { UserController, BookController } from './controllers/index.js';
+import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors} from './utils/index.js';
+import { UserController, BookController, OrderController } from './controllers/index.js';
 
 
 
@@ -16,8 +16,6 @@ mongoose
     .catch((err) => {console.log('DB error', err)});
 
 const app = express();
-app.use(express.json());
-
 
 const storage = multer.diskStorage({
     destination: (_, file, cb) => {
@@ -27,36 +25,41 @@ const storage = multer.diskStorage({
         cb(null, file.originalname);
     },
 });
-
 const upload = multer({ storage });
 
 // позволит читать json файлы, приходящие из запроса
+app.use(express.json());
 
 app.use('/media', express.static('media'));
 
+// методы регистрации и авторизации
 app.post('/auth/login', loginValidation, handleValidationErrors, UserController.login);
 app.post('/auth/register', registerValidation, handleValidationErrors, UserController.register);
+
+// методы читателя
 app.get('/auth/me', checkAuth, UserController.getMe);
 
+app.get('/books', BookController.getAll);
+app.get('/books/ByName', BookController.getBooksByName);
+app.get('/books/ByAuthor', BookController.getBooksByAuthor);
+app.get('/books/ByGenre', BookController.getBooksByGenre);
+app.get('/books/:id', BookController.getBookById);
+
+app.post('/orders', checkAuth, OrderController.create)
+
+//методы администратора
 app.post('/media', checkAuth, checkAdminRole, upload.single('image'), (req, res) => {
     res.json({
         url: `/media/${req.file.originalname}`
     })
 });
-
-
-app.get('/books', BookController.getAll);
-app.get('/books/:id', BookController.getOne);
-
 app.post('/books', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.create);
-app.delete('/books/:id', checkAuth, BookController.remove);
-app.patch(
-    '/books/:id',
-     checkAuth,
-     bookCreateValidation,
-     handleValidationErrors,
-     BookController.update
-);
+app.delete('/books/:id', checkAuth, checkAdminRole, BookController.remove);
+app.patch('/books/:id', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.update);
+
+// методы библиотекаря
+app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders)
+
 
 
 app.listen(4444, (err) => {

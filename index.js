@@ -8,6 +8,7 @@ import {registerValidation, loginValidation, bookCreateValidation} from './valid
 import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors} from './utils/index.js';
 import { UserController, BookController, OrderController } from './controllers/index.js';
 import cors from "cors";
+import {searchBooks} from "./controllers/BookController.js";
 
 
 
@@ -42,8 +43,7 @@ app.post('/auth/register', registerValidation, handleValidationErrors, UserContr
 app.get('/auth/me', checkAuth, UserController.getMe);
 
 app.get('/books', BookController.getAll);
-app.get('/books/ByName', BookController.getBooksByName);
-app.get('/books/ByAuthor', BookController.getBooksByAuthor);
+app.get('/books/SearchBooks', BookController.searchBooks);
 app.get('/books/ByGenre', BookController.getBooksByGenre);
 app.get('/books/:id', BookController.getBookById);
 app.get('/genres', BookController.getAllGenres);

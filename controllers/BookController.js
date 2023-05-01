@@ -65,19 +65,42 @@ export const getAll = async (req, res) => {
     }
 };
 
-export const getBooksByName = async (req, res) => {
+export const searchBooks = async (req, res) => {
+
+    let {name, type, limit, page} = req.query;
+    page = page || 1
+    limit = limit || 9
+    let offset = page * limit - limit
+    let books;
+    let count;
+
     try {
 
-        const books = await BookModel.find({title: new RegExp(req.body.bookName )}).exec();
+        if (type === "0")
+        {
 
-        if(books.length === 0)
+            books = await BookModel.find({title: new RegExp(name)})
+                .limit(limit).skip(offset).exec();
+
+            count = await BookModel.count({title: new RegExp(name)}).exec();
+
+        } else {
+
+            books = await BookModel.find({"authors" : { $in : [name]  } })
+                .limit(limit).skip(offset).exec();
+            count = await BookModel.count({"authors" : { $in : [name]  } }).exec();
+        }
+
+        //console.log(books);
+
+        if(count === 0)
         {
             return res.status(404).json({
                 msg: "Не удалось найти книги"
             })
         }
 
-        res.json(GetLightDataAboutBooks(books));
+        res.json({books: GetLightDataAboutBooks(books), count: count});
 
     } catch (err) {
         console.log(err);
@@ -147,7 +170,7 @@ export const getBookById = async (req, res) => {
         book.authors = LineString(book.authors);
         book.genres = LineString(book.genres);
 
-        console.log("Success");
+
         return res.json(book);
 
     } catch (err) {
@@ -261,7 +284,7 @@ export const update = async (req, res) => {
 
 export const createGenre = async (req, res) => {
     try {
-        console.log(req.params.name);
+        //console.log(req.params.name);
 
         const doc = new GenreModel({
             name: req.params.name

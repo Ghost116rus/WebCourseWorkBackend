@@ -100,6 +100,8 @@ export const getMe = async (req, res) => {
         const result = {};
         const { passwordHash, role, ...userData } = user._doc;
         result['userData'] = userData;
+        result['notGiven'] = await OrderModel.find({reader: {_id: userData._id}, isGiven: false}).populate("book");
+        result['active'] = await OrderModel.find({reader: {_id: userData._id}, isGiven: true, isReturned: false}).populate("book");
         result['history'] = await OrderModel.find({reader: {_id: userData._id}}).populate("book");
 
         res.json(result);

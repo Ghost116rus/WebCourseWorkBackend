@@ -8,7 +8,7 @@ import {registerValidation, loginValidation, bookCreateValidation} from './valid
 import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors} from './utils/index.js';
 import { UserController, BookController, OrderController } from './controllers/index.js';
 import cors from "cors";
-import {searchBooks} from "./controllers/BookController.js";
+import {reqToReturn} from "./controllers/UserController.js";
 
 
 
@@ -41,6 +41,8 @@ app.post('/auth/register', registerValidation, handleValidationErrors, UserContr
 
 // методы читателя
 app.get('/auth/me', checkAuth, UserController.getMe);
+app.post('/user/notRecieve', checkAuth, UserController.notRecieveBook);
+app.post('/user/requestToReturn', checkAuth, UserController.reqToReturn);
 
 app.get('/books', BookController.getAll);
 app.get('/books/SearchBooks', BookController.searchBooks);

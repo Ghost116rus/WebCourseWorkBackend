@@ -6,7 +6,7 @@ import mongoose from 'mongoose';
 import {registerValidation, loginValidation, bookCreateValidation} from './validations.js';
 
 import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors, CheckUserRole} from './utils/index.js';
-import { UserController, BookController, OrderController } from './controllers/index.js';
+import { UserController, BookController, OrderController, AdminController } from './controllers/index.js';
 import cors from "cors";
 
 
@@ -59,9 +59,12 @@ app.post('/media', checkAuth, checkAdminRole, upload.single('image'), (req, res)
     })
 });
 app.post('/genres/createGenre', checkAuth, checkAdminRole, BookController.createGenre);
+app.delete('/genres/delete/:id', checkAuth, checkAdminRole, AdminController.removeGenre);
 app.post('/books', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.create);
 app.delete('/books/:id', checkAuth, checkAdminRole, BookController.remove);
 app.patch('/books/:id', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.update);
+
+app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLibrarians)
 
 // методы библиотекаря
 app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders)

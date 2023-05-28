@@ -8,6 +8,7 @@ import {registerValidation, loginValidation, bookCreateValidation} from './valid
 import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors, CheckUserRole} from './utils/index.js';
 import { UserController, BookController, OrderController, AdminController } from './controllers/index.js';
 import cors from "cors";
+import {getActiveRequestToReturn} from "./controllers/OrderController.js";
 
 
 
@@ -68,6 +69,7 @@ app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLi
 
 // методы библиотекаря
 app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders)
+app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn)
 
 
 

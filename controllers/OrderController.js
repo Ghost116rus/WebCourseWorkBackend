@@ -1,11 +1,13 @@
 import OrderModel from '../models/Order.js';
 import BookModel from '../models/Book.js';
 import UserModel from '../models/User.js';
+import RequestToReturn from "../models/RequestToReturn.js";
+import Order from "../models/Order.js";
 
 
 export const getActiveOrders = async (req, res) => {
     try {
-        const orders = await OrderModel.find({isGiven: false});
+        const orders = await OrderModel.find({isGiven: false}).populate("book").populate('reader');
 
         res.json(orders)
 
@@ -13,6 +15,26 @@ export const getActiveOrders = async (req, res) => {
         console.log(err);
         res.status(500).json({
             msg: "Не удалось получить активные заявки",
+        })
+    }
+};
+
+export const getActiveRequestToReturn = async (req, res) => {
+    try {
+        const requests = await RequestToReturn.find().populate("order");
+        let orders = [];
+        for (let i = 0; i <requests.length; i++)
+        {
+            let order = await OrderModel.findById({_id:  requests[i].order._id}).populate('book').populate('reader').exec();
+            orders.push(order);
+        }
+
+        res.json(orders)
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            msg: "Не удалось получить заявки на возврат книги",
         })
     }
 };

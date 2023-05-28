@@ -216,16 +216,16 @@ export const create = async (req, res) => {
             publisher: req.body.publisher,
             year: req.body.year,
             volume: req.body.volume,
-            imageUrl: req.body.imageUrl,
             authors: req.body.authors,
             genres: req.body.genres,
 
             description: req.body.description,
             count: req.body.count,
+
+            imageUrl: req.body.imageUrl,
+            bookUrl: req.body.urlForFile
         });
-
-        const book = await doc.save();
-
+        await doc.save();
         res.json({
             success: true,
         });
@@ -284,10 +284,10 @@ export const update = async (req, res) => {
 
 export const createGenre = async (req, res) => {
     try {
-        //console.log(req.params.name);
+        console.log(req.body.name);
 
         const doc = new GenreModel({
-            name: req.params.name
+            name: req.body.name
         });
 
         await doc.save();

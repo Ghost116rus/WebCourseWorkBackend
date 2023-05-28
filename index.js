@@ -5,10 +5,10 @@ import mongoose from 'mongoose';
 
 import {registerValidation, loginValidation, bookCreateValidation} from './validations.js';
 
-import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors} from './utils/index.js';
+import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors, CheckUserRole} from './utils/index.js';
 import { UserController, BookController, OrderController } from './controllers/index.js';
 import cors from "cors";
-import {reqToReturn} from "./controllers/UserController.js";
+
 
 
 
@@ -50,7 +50,7 @@ app.get('/books/ByGenre', BookController.getBooksByGenre);
 app.get('/books/:id', BookController.getBookById);
 app.get('/genres', BookController.getAllGenres);
 
-app.post('/orders', checkAuth, OrderController.create)
+app.post('/orders', checkAuth, CheckUserRole, OrderController.create)
 
 //методы администратора
 app.post('/media', checkAuth, checkAdminRole, upload.single('image'), (req, res) => {
@@ -58,7 +58,7 @@ app.post('/media', checkAuth, checkAdminRole, upload.single('image'), (req, res)
         url: `/media/${req.file.originalname}`
     })
 });
-app.post('/genres/:name', checkAuth, checkAdminRole, BookController.createGenre);
+app.post('/genres/createGenre', checkAuth, checkAdminRole, BookController.createGenre);
 app.post('/books', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.create);
 app.delete('/books/:id', checkAuth, checkAdminRole, BookController.remove);
 app.patch('/books/:id', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.update);

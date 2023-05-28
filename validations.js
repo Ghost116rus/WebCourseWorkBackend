@@ -18,5 +18,4 @@ export const bookCreateValidation = [
     body('description', 'Введите аннотацию книги').isLength({min: 5}).isString(),
     body('authors', 'Неверный формат авторов (укажите массив)').optional().isArray(),
     body('genres', 'Неверный формат жанров (укажите массив)').optional().isArray(),
-    body('imageUrl', 'Неверная ссылка на изображение').optional().isString(),
 ];

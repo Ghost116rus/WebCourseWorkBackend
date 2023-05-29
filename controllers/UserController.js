@@ -116,6 +116,30 @@ export const getMe = async (req, res) => {
 };
 
 
+export const getUser = async (req, res) => {
+    try {
+
+        const user = await UserModel.findById(req.query.id);
+
+        if (!user) {
+            return res.status(404).json({
+                msg: "Пользователь не был найден"
+            })
+        }
+        const result = {};
+        const { passwordHash, role, ...userData } = user._doc;
+        result['userData'] = userData;
+        result['history'] = await OrderModel.find({reader: {_id: userData._id}}).populate("book");
+
+        res.json(result);
+    } catch (error) {
+        console.log(error);
+        res.status(500).json({
+            msg: 'Нет доступа',
+        })
+    }
+};
+
 export const notRecieveBook = async (req, res) => {
     try {
         console.log(req.body)

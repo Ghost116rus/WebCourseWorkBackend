@@ -72,6 +72,7 @@ app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLi
 app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders);
 app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn);
 app.get('/user/SearchUser', checkAuth, CheckPersonalRole, UserController.searchReaders);
+app.get('/user/getUser', checkAuth, CheckPersonalRole, UserController.getUser);
 
 
 app.listen(4444, (err) => {

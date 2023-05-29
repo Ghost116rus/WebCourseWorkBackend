@@ -71,7 +71,7 @@ app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLi
 // методы библиотекаря
 app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders);
 app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn);
-app.get('/user/SearchUser', UserController.searchReaders);
+app.get('/user/SearchUser', checkAuth, CheckPersonalRole, UserController.searchReaders);
 
 
 app.listen(4444, (err) => {

@@ -9,6 +9,7 @@ import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors, Ch
 import { UserController, BookController, OrderController, AdminController } from './controllers/index.js';
 import cors from "cors";
 import {getActiveRequestToReturn} from "./controllers/OrderController.js";
+import {searchReaders} from "./controllers/UserController.js";
 
 
 
@@ -65,12 +66,12 @@ app.post('/books', checkAuth, checkAdminRole, bookCreateValidation, handleValida
 app.delete('/books/:id', checkAuth, checkAdminRole, BookController.remove);
 app.patch('/books/:id', checkAuth, checkAdminRole, bookCreateValidation, handleValidationErrors, BookController.update);
 
-app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLibrarians)
+app.get('/librarian/getAll', checkAuth, checkAdminRole, AdminController.getAllLibrarians);
 
 // методы библиотекаря
-app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders)
-app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn)
-
+app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.getActiveOrders);
+app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn);
+app.get('/user/SearchUser', UserController.searchReaders);
 
 
 app.listen(4444, (err) => {

@@ -180,3 +180,45 @@ export const reqToReturn = async (req, res) => {
         })
     }
 }
+
+
+function GetLightDataAboutUsers (userData) {
+    const users = [];
+
+    userData.map(user => {
+        users.push({
+            _id: user._id,
+            fullName: user.fullName,
+            email: user.email,
+            mobilePhone: user.mobilePhone,
+            loyaltyPoints: user.loyaltyPoints
+        })
+    })
+
+    return users;
+}
+
+export const searchReaders = async (req, res) => {
+
+    let {name, type} = req.query;
+    let users;
+
+    try {
+        if (type === "0")
+        {
+            users = await UserModel.find({fullName: new RegExp(name), role: 1}).exec();
+        } else {
+
+            users = await UserModel.find({email: new RegExp(name), role: 1}).exec();
+        }
+
+        res.json(GetLightDataAboutUsers(users));
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            msg: "Не удалось найти пользователей",
+        })
+    }
+};
+

@@ -8,7 +8,7 @@ import {registerValidation, loginValidation, bookCreateValidation} from './valid
 import {checkAdminRole, CheckPersonalRole, checkAuth, handleValidationErrors, CheckUserRole} from './utils/index.js';
 import { UserController, BookController, OrderController, AdminController } from './controllers/index.js';
 import cors from "cors";
-import {getActiveRequestToReturn} from "./controllers/OrderController.js";
+import {getActiveRequestToReturn, noRecieveBook, recieveBook} from "./controllers/OrderController.js";
 import {searchReaders} from "./controllers/UserController.js";
 
 
@@ -73,6 +73,11 @@ app.get('/orders/activeOrders', checkAuth, CheckPersonalRole, OrderController.ge
 app.get('/orders/activeRequest', checkAuth, CheckPersonalRole, OrderController.getActiveRequestToReturn);
 app.get('/user/SearchUser', checkAuth, CheckPersonalRole, UserController.searchReaders);
 app.get('/user/getUser', checkAuth, CheckPersonalRole, UserController.getUser);
+
+app.patch('/order/giveBook', checkAuth, CheckPersonalRole, OrderController.giveBook);
+app.patch('/order/noGiveBook', checkAuth, CheckPersonalRole, OrderController.notGiveBook);
+app.patch('/order/recieveBook', checkAuth, CheckPersonalRole, OrderController.recieveBook);
+app.patch('/order/noRecieveBook', checkAuth, CheckPersonalRole, OrderController.noRecieveBook);
 
 
 app.listen(4444, (err) => {

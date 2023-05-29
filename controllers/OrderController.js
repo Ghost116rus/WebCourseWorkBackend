@@ -7,7 +7,7 @@ import Order from "../models/Order.js";
 
 export const getActiveOrders = async (req, res) => {
     try {
-        const orders = await OrderModel.find({isGiven: false}).populate("book").populate('reader');
+        const orders = await OrderModel.find({isCancled: false, isGiven: false}).populate("book").populate('reader');
 
         res.json(orders)
 
@@ -40,10 +40,7 @@ export const getActiveRequestToReturn = async (req, res) => {
 };
 
 export const create = async (req, res) => {
-    console.log("Wortk");
     try {
-        console.log(Date.now() + 30)
-
         const user = await UserModel.findById(req.userId);
 
         if (!user) {
@@ -78,11 +75,8 @@ export const create = async (req, res) => {
             reader: req.userId,
             book: req.body.bookId,
         });
-
         const order = await doc.save();
-
         res.json(order);
-
     } catch (err) {
         console.log(err);
         res.status(500).json({
@@ -91,39 +85,125 @@ export const create = async (req, res) => {
     }
 }
 
-/*
-export const update = async (req, res) => {
+
+export const giveBook = async (req, res) => {
     try {
-        const postId = req.params.id;
-
-        const doc = await PostModel.findOne({_id: postId})
-
+        const orderId = req.body.id;
+        const doc = await OrderModel.findOne({_id: orderId})
         if (!doc) {
             return res.status(404).json({
-              message: 'Статья не найдена',
+              message: 'Заявка не найдена',
             });
-          }   
-
-        await PostModel.updateOne(
+          }
+        await OrderModel.updateOne(
             {
-                _id: postId,
-            }, 
+                _id: orderId,
+            },
             {
-                title: req.body.title,
-                text: req.body.text,
-                imageUrl: req.body.imageUrl,
-                tags: req.body.tags,
+                isGiven: true
             },
         );
-
         res.json({
-            succes: true,
+            message: "Книга успешно выдана",
         })
 
     } catch (err) {
         console.log(err);
         res.status(500).json({
-            message: "Не удалось обновить статью",
+            message: "Не удалось совершить операцию",
         })
     }
-}*/
+}
+
+export const notGiveBook = async (req, res) => {
+    try {
+        const orderId = req.body.id;
+        const doc = await OrderModel.findOne({_id: orderId}).populate("reader").populate("book");
+        if (!doc) {
+            return res.status(404).json({
+                message: 'Заявка не найдена',
+            });
+        }
+        await OrderModel.updateOne(
+            {
+                _id: orderId,
+            },
+            {
+                isCancled: true
+            },
+        );
+        await UserModel.findByIdAndUpdate(doc._doc.reader._id, {$inc: { loyaltyPoints: 10 }});
+        await BookModel.findByIdAndUpdate(doc._doc.book._id, {$inc: { count: 1 }});
+        res.json({
+            message: "Успешно выполнено",
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось совершить операцию",
+        })
+    }
+}
+
+export const recieveBook = async (req, res) => {
+    try {
+        const orderId = req.body.id;
+        const doc = await OrderModel.findOne({_id: orderId}).populate("reader");
+        const request = await RequestToReturn.findOne({order: orderId})
+        if (!doc) {
+            return res.status(404).json({
+                message: 'Заявка не найдена',
+            });
+        }
+        if (!request) {
+            return res.status(404).json({
+                message: 'Заявка не найдена',
+            });
+        }
+        await OrderModel.updateOne(
+            {
+                _id: orderId,
+            },
+            {
+                isReturned: true
+            },
+        );
+
+        await RequestToReturn.findByIdAndDelete(request._id);
+        await UserModel.findByIdAndUpdate(doc._doc.reader._id, {$inc: { loyaltyPoints: 10 }});
+        await BookModel.findByIdAndUpdate(doc._doc.book._id, {$inc: { count: 1 }});
+        res.json({
+            message: "Успешно выполнено",
+        })
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось совершить операцию",
+        })
+    }
+}
+
+export const noRecieveBook = async (req, res) => {
+    try {
+        const orderId = req.body.id;
+        const doc = await RequestToReturn.findOne({order: orderId})
+        if (!doc) {
+            return res.status(404).json({
+                message: 'Заявка не найдена',
+            });
+        }
+
+        await RequestToReturn.findByIdAndDelete(doc._id);
+
+        res.json({
+            message: "Успешно выполнено",
+        })
+
+    } catch (err) {
+        console.log(err);
+        res.status(500).json({
+            message: "Не удалось совершить операцию",
+        })
+    }
+}
+

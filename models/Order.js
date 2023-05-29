@@ -13,6 +13,10 @@ const OrderSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    isCancled: {
+        type: Boolean,
+        default: false
+    },
     reader: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',

@@ -162,9 +162,10 @@ export const recieveBook = async (req, res) => {
         }
         await OrderModel.updateOne(
             {
-                _id: orderId,
+                _id: orderId
             },
             {
+                librarian: req.userId,
                 isReturned: true
             },
         );
